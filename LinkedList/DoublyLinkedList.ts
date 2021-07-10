@@ -34,36 +34,40 @@ export class DoublyLinkedList<T> implements ILinkedList<T> {
       let curr: DataNode<T> = this.head;
       while (curr.next !== null) curr = curr.next;
       curr.next = node;
+      node.prev = curr;
       return this.head;
     }
   }
 
   public insertNodeInFront(data: T): DataNode<T> {
     const node: DataNode<T> = new DataNode(data);
-    const curr: DataNode<T> = this.head;
     this.head.prev = node;
-    node.next = curr;
+    node.next = this.head;
+    this.head = node;
     return this.head;
   }
 
-  public deleteNodeInFront(data: T): DataNode<T> {
+  public deleteNodeInFront(): DataNode<T> {
     const firstNode = this.head.next;
+    firstNode.prev = null;
     this.head = firstNode;
-    this.head.prev = undefined;
     return this.head;
   }
 
   public pullNode(): DataNode<T> {
-    let curr: DataNode<T> = this.head;
+    let curr: DataNode<T> = this.head.next;
 
     while (curr.next !== null) curr = curr.next;
+    const prev = curr.prev;
+    prev.next = null;
     curr = null;
     return this.head;
   }
 
-  public insertAtPosition(position: T, data: T): DataNode<T> {
-    if (Number(position) === 0) {
+  public insertAtPosition(position: number, data: T): DataNode<T> {
+    if (position === 0) {
       this.insertNodeInFront(data);
+      return;
     }
     let i = 0;
     let curr = this.head.next;
@@ -81,9 +85,10 @@ export class DoublyLinkedList<T> implements ILinkedList<T> {
     return this.head;
   }
 
-  public deleteAtPosition(position: T, data: T): DataNode<T> {
+  public deleteAtPosition(position: number): DataNode<T> {
     if (Number(position) === 0) {
-      this.deleteNodeInFront(data);
+      this.deleteNodeInFront();
+      return;
     }
     let i = 0;
     let curr = this.head.next;
@@ -100,7 +105,7 @@ export class DoublyLinkedList<T> implements ILinkedList<T> {
     const temp = curr.next;
     temp.prev = prev;
     prev.next = temp;
-    curr = undefined;
+    curr = null;
     return this.head;
   }
 
@@ -114,7 +119,7 @@ export class DoublyLinkedList<T> implements ILinkedList<T> {
     console.log(currentNode.data);
   }
 
-  public size(): T {
+  public size(): number {
     let currentNode = this.head;
     let count = 0;
     while (currentNode?.next !== null) {
@@ -124,3 +129,11 @@ export class DoublyLinkedList<T> implements ILinkedList<T> {
     return count;
   }
 }
+
+const list = new DoublyLinkedList(1, 2, 3, 4);
+list.pushNode(5);
+list.pushNode(6);
+list.pullNode();
+list.insertAtPosition(5, 6);
+list.deleteAtPosition(5);
+list.printList();
